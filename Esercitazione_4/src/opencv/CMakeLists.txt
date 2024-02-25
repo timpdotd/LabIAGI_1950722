@@ -1,26 +1,3 @@
-find_package( OpenCV QUIET )
-include_directories( ${OpenCV_INCLUDE_DIRS} )
-file(MAKE_DIRECTORY ../../interactive_visualization)
-
-if(OpenCV_FOUND)
-  message(---------------------------------------------)
-  message("OpenCV found!!!!")
-  message("Building WITH Visualization")
-  message(---------------------------------------------)
-
-  add_executable(./interactive_visualization/harris test_harris.cpp opencv_utils.cpp opencv_utils.h)
-  add_executable(./interactive_visualization/matches test_matches.cpp opencv_utils.cpp opencv_utils.h)
-  add_executable(./interactive_visualization/inliers test_inliers.cpp opencv_utils.cpp opencv_utils.h)
-  add_executable(./interactive_visualization/panorama test_panorama.cpp opencv_utils.cpp opencv_utils.h)
-
-  target_link_libraries( ./interactive_visualization/harris ${OpenCV_LIBS} )
-  target_link_libraries( ./interactive_visualization/matches ${OpenCV_LIBS} )
-  target_link_libraries( ./interactive_visualization/inliers ${OpenCV_LIBS} )
-  target_link_libraries( ./interactive_visualization/panorama ${OpenCV_LIBS} )
-
-else()
-  message(---------------------------------------------)
-  message("OpenCV NOT found")
-  message("Building WITHOUT Visualization")
-  message(---------------------------------------------)
-endif()
+version https://git-lfs.github.com/spec/v1
+oid sha256:3dcd4845e4f267b01070a65a2130f04c2d620e4df56b99c44ae61d9d8436d983
+size 1287
