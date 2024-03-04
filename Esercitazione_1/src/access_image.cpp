@@ -42,9 +42,8 @@ void set_pixel(Image& im, int x, int y, int c, float value){
 void copy_image(Image& to, const Image& from){
   // allocating data for the new image
   to.data=(float*)calloc(from.w*from.h*from.c,sizeof(float));
-  to.c=from.c;
-  to.w=from.w;
-  to.h=from.h;
-  to.data = from.data;
-  memcpy(to.data, from.data, from.c*from.w*from.h*(sizeof(float)));
+  to.w = from.w;
+  to.h = from.h;
+  to.c = from.c;
+  memcpy(to.data, from.data,from.w*from.h*from.c*sizeof(float));
 }
