@@ -100,9 +100,40 @@ float min(float a, float b, float c){
 void rgb_to_hsv(Image& im){
   assert(im.c==3 && "only works for 3-channels images");
   
-  // TODO: Convert all pixels from RGB format to HSV format
-  
-  NOT_IMPLEMENTED();
+  float R, G, B;
+  float H, S, V, C;
+
+  for (int i=0; i<im.w; ++i){
+    for (int j=0; j<im.h; ++j){
+      R = im.data[i + j*im.w + im.w*im.h*0];
+      G = im.data[i + j*im.w + im.w*im.h*1];
+      B = im.data[i + j*im.w + im.w*im.h*2];
+
+      V = max(R,G,B);
+      C = V - min(R,G,B);
+      S = (V != 0)? C/V : 0;
+
+      if(C != 0){
+        if (V == R){
+          H = ((B-R)/C) + 2;
+        }
+        else if (V == G){
+          H = ((R-B)/C) + 2;
+        }
+        else{
+          H = ((R-G)/C) + 4;
+        }
+        H = (H < 0)? (H/6)+1 : (H/6);
+      }
+      else{
+        H = 0;
+      }
+
+      im.data[i + j*im.w + im.w*im.h*0] = H;
+      im.data[i + j*im.w + im.w*im.h*1] = S;
+      im.data[i + j*im.w + im.w*im.h*2] = V;
+    }
+  }
   
 }
 
@@ -111,10 +142,71 @@ void rgb_to_hsv(Image& im){
 void hsv_to_rgb(Image& im){
   assert(im.c==3 && "only works for 3-channels images");
   
+  float R, G, B;
+  float H, S, V, C;
+  float Xpos, Xneg;
+  float minv, maxv;
+  int Hmod;
+    
   // TODO: Convert all pixels from HSV format to RGB format
-  
-  NOT_IMPLEMENTED();
-  
+  for(int i = 0 ; i < im.w ; ++i){
+    for(int j = 0 ; j < im.h ; ++j){
+      H = im.data[i + j*im.w + im.w*im.h*0];
+      S = im.data[i + j*im.w + im.w*im.h*1];
+      V = im.data[i + j*im.w + im.w*im.h*2];
+
+      C = S * V;
+      maxv = V;
+      minv = V-C;
+
+      H *= 6;
+      Xpos = C * (H - floor(H)) + minv;
+      Xneg = C * (1 - (H - floor(H))) + minv;
+      Hmod = int(H);
+
+      switch(Hmod){
+        case 0:
+          im.data[i + j*im.w + im.w*im.h*0] = V;
+          im.data[i + j*im.w + im.w*im.h*1] = Xpos;
+          im.data[i + j*im.w + im.w*im.h*2] = minv;
+        break;
+
+        case 1:
+          im.data[i + j*im.w + im.w*im.h*0] = Xneg;
+          im.data[i + j*im.w + im.w*im.h*1] = V;
+          im.data[i + j*im.w + im.w*im.h*2] = minv;
+        break;
+
+        case 2:
+          im.data[i + j*im.w + im.w*im.h*0] = minv;
+          im.data[i + j*im.w + im.w*im.h*1] = V;
+          im.data[i + j*im.w + im.w*im.h*2] = Xpos;
+        break;
+
+        case 3:
+          im.data[i + j*im.w + im.w*im.h*0] = minv;
+          im.data[i + j*im.w + im.w*im.h*1] = Xneg;
+          im.data[i + j*im.w + im.w*im.h*2] = V;
+        break;
+
+        case 4:
+          im.data[i + j*im.w + im.w*im.h*0] = Xpos;
+          im.data[i + j*im.w + im.w*im.h*1] = minv;
+          im.data[i + j*im.w + im.w*im.h*2] = V;
+        break;
+
+        case 5:
+          im.data[i + j*im.w + im.w*im.h*0] = V;
+          im.data[i + j*im.w + im.w*im.h*1] = minv;
+          im.data[i + j*im.w + im.w*im.h*2] = Xneg;
+        break;
+
+        default:
+          printf("Error in imageDataToChar() - Hmod value is not recognized.\n");
+        break;
+      }
+    }
+  }
 }
 
 // HW0 #9
@@ -134,13 +226,63 @@ void rgb_to_lch(Image& im){
 void lch_to_rgb(Image& im){
   assert(im.c==3 && "only works for 3-channels images");
   
-  // TODO: Convert all pixels from LCH format to RGB format
-  
-  NOT_IMPLEMENTED();
-  
+  float L, C, H;
+  for(int i = 0 ; i < im.w ; ++i){
+    for(int j = 0 ; j < im.h ; ++j){
+      C = im.data[i + j*im.w + im.w*im.h*1];
+      H = im.data[i + j*im.w + im.w*im.h*2];
+      im.data[i + j*im.w + im.w*im.h*1] = C * cosf(H);
+      im.data[i + j*im.w + im.w*im.h*2] = C * sinf(H);
+    }
+  }
+
+    // CIELUV => CIEXYZ
+  float up, vp, u, v;
+  float X, Y, Z;
+  for(int i = 0 ; i < im.w ; ++i){
+    for(int j = 0 ; j < im.h ; ++j){
+      if(im.data[i + j*im.w + im.w*im.h*0] == 0){
+        X = Y = Z = 0.0;
+      }
+      else{
+        L = im.data[i + j*im.w + im.w*im.h*0];
+        u = im.data[i + j*im.w + im.w*im.h*1];
+        v = im.data[i + j*im.w + im.w*im.h*2];
+            
+        up = u / (13*L) + 0.2009;
+        vp = v / (13*L) + 0.4610;
+        if(L <= 8) Y = L * powf((3.0/29.0), 3.0);
+        else  Y = powf((L+16)/116.0, 3.0);
+        X = Y * (9*up) / (4*vp);
+        Z = Y * (12 - (3*up) - (20*vp)) / (4*vp);
+      }
+
+      im.data[i + j*im.w + im.w*im.h*0] = X;
+      im.data[i + j*im.w + im.w*im.h*1] = Y;
+      im.data[i + j*im.w + im.w*im.h*2] = Z;
+    }
+  }
+
+  // CIEXYZ => linear RGB => RGB
+  // float matrix[3][3] = {{3.24096994, -1.53738318, -0.49861076}, 
+  //                       {-0.96924364, 1.8759675, 0.04155506}, 
+  //                       {0.05563008, -0.20397696, 1.05697151}};
+  for(int i = 0 ; i < im.w ; ++i){
+    for(int j = 0 ; j < im.h ; ++j){
+      X = im.data[i + j*im.w + im.w*im.h*0];
+      Y = im.data[i + j*im.w + im.w*im.h*1];
+      Z = im.data[i + j*im.w + im.w*im.h*2];
+      im.data[i + j*im.w + im.w*im.h*0] = X*3.24096994 + Y*(-1.53738318) + Z*(-0.49861076);
+      im.data[i + j*im.w + im.w*im.h*1] = X*(-0.96924364) + Y*1.8759675 + Z*0.04155506;
+      im.data[i + j*im.w + im.w*im.h*2] = X*0.05563008 + Y*(-0.20397696) + Z*1.05697151;
+      for(int k = 0 ; k < im.c ; ++k){
+        int idx = i + j*im.w + k*im.w*im.h ;
+        if(im.data[idx] <= 0.0031308) im.data[idx] = im.data[idx]*12.92;
+        else im.data[idx] =  1.055 * powf(im.data[idx], 1.0/2.4) - 0.055;
+      }
+    }
+  }
 }
-
-
 
 // Implementation of member functions
 void Image::clamp(void) { clamp_image(*this); }
