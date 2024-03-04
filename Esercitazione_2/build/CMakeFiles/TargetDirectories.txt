@@ -1,0 +1,5 @@
+/home/timperi/Desktop/LabIAGI_1950722/Esercitazione_2/build/CMakeFiles/rebuild_cache.dir
+/home/timperi/Desktop/LabIAGI_1950722/Esercitazione_2/build/CMakeFiles/edit_cache.dir
+/home/timperi/Desktop/LabIAGI_1950722/Esercitazione_2/build/CMakeFiles/test1.dir
+/home/timperi/Desktop/LabIAGI_1950722/Esercitazione_2/build/CMakeFiles/test0.dir
+/home/timperi/Desktop/LabIAGI_1950722/Esercitazione_2/build/CMakeFiles/uwimg++.dir

@@ -41,8 +41,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/home/timperi/Desktop/LabIAGI_1950722/Esercitazione_1/src",
-      "program": "/home/timperi/Desktop/LabIAGI_1950722/Esercitazione_1/src/build/Debug/outDebug",
+      "cwd": "/home/timperi/Desktop/LabIAGI_1950722/Esercitazione_2",
+      "program": "/home/timperi/Desktop/LabIAGI_1950722/Esercitazione_2/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
