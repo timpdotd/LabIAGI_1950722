@@ -10,119 +10,112 @@ using namespace std;
 // HW0 #3
 // const Image& im: input image
 // return the corresponding grayscale image
-Image rgb_to_grayscale(const Image& im)
-  {
+Image rgb_to_grayscale(const Image& im){
   assert(im.c == 3); // only accept RGB images
   Image gray(im.w,im.h,1); // create a new grayscale image (note: 1 channel)
   
-  // TODO: calculate the pixels of 'gray'
-  
-  
-  NOT_IMPLEMENTED();
+  for(int i=0; i< im.w; ++i){
+    for (int j=0; j<im.h; ++j){
+      int pix = i + j*im.w;
+      int pixR = pix;
+      int pixG = pix + im.w * im.h;
+      int pixB = pix + im.w * im.h * 2;
+      gray.data[pix] = 0.299 * im.data[pixR] + 0.587 * im.data[pixG] + 0.114 * im.data[pixB];
+    }
+  }
   
   return gray;
-  }
-
-
+}
 
 // Example function that changes the color of a grayscale image
-Image grayscale_to_rgb(const Image& im, float r, float g, float b)
-  {
+Image grayscale_to_rgb(const Image& im, float r, float g, float b){
   assert(im.c == 1);
   Image rgb(im.w,im.h,3);
   
-  for(int q2=0;q2<im.h;q2++)for(int q1=0;q1<im.w;q1++)
-    {
+  for(int q2=0;q2<im.h;q2++)for(int q1=0;q1<im.w;q1++){
     rgb(q1,q2,0)=r*im(q1,q2);
     rgb(q1,q2,1)=g*im(q1,q2);
     rgb(q1,q2,2)=b*im(q1,q2);
-    }
+  }
   
   return rgb;
-  }
-
-
-
+}
 
 // HW0 #4
 // Image& im: input image to be modified in-place
 // int c: which channel to shift
 // float v: how much to shift
-void shift_image(Image& im, int c, float v)
-  {
+void shift_image(Image& im, int c, float v){
   assert(c>=0 && c<im.c); // needs to be a valid channel
   
-  // TODO: shift all the pixels at the specified channel
-  
-  NOT_IMPLEMENTED();
-  
+  for(int i=0; i< im.w; ++i){
+    for (int j=0; j<im.h; ++j){
+      int pixel_address = i + j*im.w + c*im.w*im.h;
+      im.data[pixel_address] += v;
+    }
   }
+}
 
 // HW0 #8
 // Image& im: input image to be modified in-place
 // int c: which channel to scale
 // float v: how much to scale
-void scale_image(Image& im, int c, float v)
-  {
+void scale_image(Image& im, int c, float v){
   assert(c>=0 && c<im.c); // needs to be a valid channel
   
-  // TODO: scale all the pixels at the specified channel
-  
-  NOT_IMPLEMENTED();
-  
+  for(int i=0; i< im.w; ++i){
+    for (int j=0; j<im.h; ++j){
+      int pixel_address = i + j*im.w + c*im.w*im.h;
+      im.data[pixel_address] *= v;
+    }
   }
+}
 
 
 // HW0 #5
 // Image& im: input image to be modified in-place
-void clamp_image(Image& im)
-  {
+void clamp_image(Image& im){
   // TODO: clamp all the pixels in all channel to be between 0 and 1
   
   NOT_IMPLEMENTED();
   
-  }
+}
 
 // These might be handy
-float max(float a, float b, float c)
-  {
+float max(float a, float b, float c){
   return max({a,b,c});
-  }
+}
 
-float min(float a, float b, float c)
-  {
+float min(float a, float b, float c){
   return min({a,b,c});
-  }
+}
 
 
 // HW0 #6
 // Image& im: input image to be modified in-place
-void rgb_to_hsv(Image& im)
-  {
+void rgb_to_hsv(Image& im){
   assert(im.c==3 && "only works for 3-channels images");
   
   // TODO: Convert all pixels from RGB format to HSV format
   
   NOT_IMPLEMENTED();
   
-  }
+}
 
 // HW0 #7
 // Image& im: input image to be modified in-place
-void hsv_to_rgb(Image& im)
-  {
+void hsv_to_rgb(Image& im){
   assert(im.c==3 && "only works for 3-channels images");
   
   // TODO: Convert all pixels from HSV format to RGB format
   
   NOT_IMPLEMENTED();
   
-  }
+}
 
 // HW0 #9
 // Image& im: input image to be modified in-place
-void rgb_to_lch(Image& im)
-  {
+void rgb_to_lch(Image& im){
   assert(im.c==3 && "only works for 3-channels images");
   
   // TODO: Convert all pixels from RGB format to LCH format
@@ -130,19 +123,18 @@ void rgb_to_lch(Image& im)
   
   NOT_IMPLEMENTED();
   
-  }
+}
 
 // HW0 #9
 // Image& im: input image to be modified in-place
-void lch_to_rgb(Image& im)
-  {
+void lch_to_rgb(Image& im){
   assert(im.c==3 && "only works for 3-channels images");
   
   // TODO: Convert all pixels from LCH format to RGB format
   
   NOT_IMPLEMENTED();
   
-  }
+}
 
 
 
