@@ -71,14 +71,18 @@ void scale_image(Image& im, int c, float v){
   }
 }
 
-
 // HW0 #5
 // Image& im: input image to be modified in-place
+
+const float& clamp_float(const float& val, const float& low, const float& high){
+  return (val < low) ? low : (high < val) ? high : val;
+}
+
 void clamp_image(Image& im){
   // TODO: clamp all the pixels in all channel to be between 0 and 1
-  
-  NOT_IMPLEMENTED();
-  
+  for(int i=0; i<im.w*im.h*im.c; ++i){
+    im.data[i] = clamp_float(im.data[i], 0, 1);
+  }
 }
 
 // These might be handy

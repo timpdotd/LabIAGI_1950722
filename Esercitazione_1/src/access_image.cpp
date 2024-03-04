@@ -29,7 +29,7 @@ float get_clamped_pixel(const Image& im, int x, int y, int ch){
 // Image& im: input image
 // int x,y,ch: pixel coordinates and channel of interest
 void set_pixel(Image& im, int x, int y, int c, float value){
-  if(x >= 0 && x < im.w && y >= 0 && y < im.h && c >= 0 && c <= im.c){
+  if(x >= 0 && x < im.w && y >= 0 && y < im.h && c >= 0 && c < im.c){
     im.data[pixel_address(im, x, y, c)] = value;
   }
 }
