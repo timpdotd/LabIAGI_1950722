@@ -8,10 +8,8 @@
 int pixel_address(const Image& im, int x, int y, int ch)
   {
   // TODO: calculate and return the index
-  
-  NOT_IMPLEMENTED();
-  
-  return 0;
+  return ch * im.w * im.h + y * im.w + x;
+
   }
 
 // HW0 #1
