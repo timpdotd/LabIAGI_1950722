@@ -6,10 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/home/timperi/Desktop/LabIAGI_1950722/Esercitazione_1/src/access_image.cpp
-image.h
-/home/timperi/Desktop/LabIAGI_1950722/Esercitazione_1/src/image.h
-
 /home/timperi/Desktop/LabIAGI_1950722/Esercitazione_1/src/image.h
 cassert
 -
@@ -27,6 +23,18 @@ stdexcept
 -
 utils.h
 /home/timperi/Desktop/LabIAGI_1950722/Esercitazione_1/src/utils.h
+
+/home/timperi/Desktop/LabIAGI_1950722/Esercitazione_1/src/process_image.cpp
+cstdio
+-
+cstring
+-
+cassert
+-
+cmath
+-
+image.h
+/home/timperi/Desktop/LabIAGI_1950722/Esercitazione_1/src/image.h
 
 /home/timperi/Desktop/LabIAGI_1950722/Esercitazione_1/src/utils.h
 vector
