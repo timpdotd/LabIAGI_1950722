@@ -1,1 +1,3 @@
-/usr/bin/c++ -fPIC -fdiagnostics-color=always -std=c++11 -pthread -O3 -g -march=native -fPIC  -shared -Wl,-soname,libuwimg++.so -o libuwimg++.so CMakeFiles/uwimg++.dir/src/utils.cpp.o CMakeFiles/uwimg++.dir/src/load_image.cpp.o CMakeFiles/uwimg++.dir/src/access_image.cpp.o CMakeFiles/uwimg++.dir/src/process_image.cpp.o 
+version https://git-lfs.github.com/spec/v1
+oid sha256:6b919c3b3fd03eb9e48f47411e5c35c64dacd9a4fd97ec3770796d4edf1a15f2
+size 322

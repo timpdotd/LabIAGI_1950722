@@ -88,5 +88,3 @@ Image bilinear_resize(const Image& im, int w, int h){
   }
   return ret;
 }
-
-
