@@ -1,3 +1,1 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:de6f53b8d9553e9200f95f35c5275b61bf848a3ada4008404a736d137437870b
-size 260
+/usr/bin/c++  -Wall -fdiagnostics-color=always -std=c++11 -pthread -O3 -g -march=native -fPIC  -rdynamic CMakeFiles/test1.dir/src/test/test1.cpp.o  -o ../test1  -Wl,-rpath,/home/timperi/Desktop/LabIAGI_1950722/Esercitazione_2/build libuwimg++.so -lm -lstdc++ 

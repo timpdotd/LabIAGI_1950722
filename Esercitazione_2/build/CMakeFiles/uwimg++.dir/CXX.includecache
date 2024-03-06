@@ -38,6 +38,26 @@ stdexcept
 utils.h
 /home/timperi/Desktop/LabIAGI_1950722/Esercitazione_2/src/utils.h
 
+/home/timperi/Desktop/LabIAGI_1950722/Esercitazione_2/src/process_image.cpp
+cstdio
+-
+cstring
+-
+cassert
+-
+cmath
+-
+image.h
+/home/timperi/Desktop/LabIAGI_1950722/Esercitazione_2/src/image.h
+
+/home/timperi/Desktop/LabIAGI_1950722/Esercitazione_2/src/resize_image.cpp
+cmath
+-
+iostream
+-
+image.h
+/home/timperi/Desktop/LabIAGI_1950722/Esercitazione_2/src/image.h
+
 /home/timperi/Desktop/LabIAGI_1950722/Esercitazione_2/src/utils.h
 vector
 -
