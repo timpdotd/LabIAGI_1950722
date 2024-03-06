@@ -15,21 +15,19 @@ using namespace std;
 // Comparator for matches
 // const void *a, *b: pointers to the matches to compare.
 // returns: result of comparison, 0 if same, 1 if a > b, -1 if a < b.
-int match_compare(const void *a, const void *b)
-  {
+int match_compare(const void *a, const void *b){
   Match *ra = (Match *)a;
   Match *rb = (Match *)b;
   if (ra->distance < rb->distance) return -1;
   else if (ra->distance > rb->distance) return  1;
   else return 0;
-  }
+}
 
 
 // Place two images side by side on canvas, for drawing matching pixels.
 // const Image& a, b: images to place.
 // returns: image with both a and b side-by-side.
-Image both_images(const Image& a, const Image& b)
-  {
+Image both_images(const Image& a, const Image& b){
   assert(a.c==b.c);
   Image both(a.w + b.w, a.h > b.h ? a.h : b.h, a.c);
   
@@ -43,15 +41,14 @@ Image both_images(const Image& a, const Image& b)
       for(int i = 0; i < b.w; ++i)
         both(i+a.w, j, k) = b(i, j, k);
   return both;
-  }
+}
 
 // Draws lines between matching pixels in two images.
 // const Image& a, b: two images that have matches.
 // const vector<Match>& matches: array of matches between a and b.
 // int inliers: number of inliers at beginning of matches, drawn in green.
 // returns: image with matches drawn between a and b on same canvas.
-Image draw_matches(const Image& a, const Image& b, const vector<Match>& matches, const vector<Match>& inliers)
-  {
+Image draw_matches(const Image& a, const Image& b, const vector<Match>& matches, const vector<Match>& inliers){
   Image both = both_images(a, b);
   
   for(int i = 0; i < (int)matches.size(); ++i)
@@ -83,27 +80,25 @@ Image draw_matches(const Image& a, const Image& b, const vector<Match>& matches,
       }
     }
   return both;
-  }
+}
 
 // Draw the matches with inliers in green between two images.
 // const Image& a, b: two images to match.
 // vector<Match> m: matches
 // Matrix H: the current homography
 // thresh: for thresholding inliers
-Image draw_inliers(const Image& a, const Image& b, const Matrix& H, const vector<Match>& m, float thresh)
-  {
+Image draw_inliers(const Image& a, const Image& b, const Matrix& H, const vector<Match>& m, float thresh){
   vector<Match> inliers = model_inliers(H, m, thresh);
   Image lines = draw_matches(a, b, m, inliers);
   return lines;
-  }
+}
 
 // Find corners, match them, and draw them between two images.
 // const Image& a, b: images to match.
 // float sigma: gaussian for harris corner detector. Typical: 2
 // float thresh: threshold for corner/no corner. Typical: 1-5
 // int nms: window to perform nms on. Typical: 3
-Image find_and_draw_matches(const Image& a, const Image& b, float sigma, float thresh, int window, int nms, int corner_method)
-  {
+Image find_and_draw_matches(const Image& a, const Image& b, float sigma, float thresh, int window, int nms, int corner_method) {
   vector<Descriptor> ad= harris_corner_detector(a, sigma, thresh, window, nms, corner_method);
   vector<Descriptor> bd= harris_corner_detector(b, sigma, thresh, window, nms, corner_method);
   vector<Match> m = match_descriptors(ad, bd);
@@ -114,44 +109,45 @@ Image find_and_draw_matches(const Image& a, const Image& b, float sigma, float t
   Image lines = draw_matches(A, B, m, {});
   
   return lines;
-  }
+}
 
 // HW5 2.1
 // Calculates L1 distance between two floating point arrays.
 // vector<float>& a,b: arrays to compare.
 // returns: l1 distance between arrays (sum of absolute differences).
-float l1_distance(const vector<float>& a,const vector<float>& b)
-  {
+float l1_distance(const vector<float>& a,const vector<float>& b){
   assert(a.size()==b.size() && "Arrays must have same size\n");
   
-  // TODO: return the correct number.
-  
-  NOT_IMPLEMENTED();
-  
-  return 0;
-  }
+  //calcola la distanza tra vettori di float
+  float dist = 0;
+  int size = min(a.size(), b.size());
+  for(int i = 0; i < size; i++)
+    dist += fabs(a[i] - b[i]);
+
+  return dist;
+}
 
 // HW5 2.2a
 // Finds best matches between descriptors of two images.
 // const vector<Descriptor>& a, b: array of descriptors for pixels in two images.
 // returns: best matches found. For each element in a[] find the index of best match in b[]
-vector<int> match_descriptors_a2b(const vector<Descriptor>& a, const vector<Descriptor>& b)
-  {
+vector<int> match_descriptors_a2b(const vector<Descriptor>& a, const vector<Descriptor>& b){
   vector<int> ind;
-  for(int j=0;j<(int)a.size();j++)
-    {
+  for(int j=0;j<(int)a.size();j++){
     int bind = -1; // <- find the best match (-1: no match)
     float best_distance=1e10f;  // <- best distance
     
-    // TODO: find the best 'bind' descriptor in b that best matches a[j]
-    // TODO: put your code here:
-    
-    NOT_IMPLEMENTED();
+    for (int i=0; i < (int)b.size(); i++){
+      float dist = l1_distance(a[j].data, b[i].data);
+      if (dist < best_distance) {
+        best_distance = dist;
+        bind = i;
+      }
     }
-  return ind;
-  
+    ind.push_back(bind);
   }
-
+  return ind;
+}
 
 // HW5 2.2b
 // Finds best matches between descriptors of two images.
@@ -164,13 +160,15 @@ vector<Match> match_descriptors(const vector<Descriptor>& a, const vector<Descri
   
   vector<Match> m;
   
-  // TODO: use match_descriptors_a2b(a,b) and match_descriptors_a2b(b,a)
-  // and populate `m` with good matches!
+  vector<int> a2b = match_descriptors_a2b(a,b);
+  vector<int> b2a = match_descriptors_a2b(b,a);
   
-  NOT_IMPLEMENTED();
+  for (int i = 0; i < a2b.size(); i++)
+    if (b2a[a2b[i]] == i)
+      m.push_back(Match (&a[i], &b[a2b[i]], l1_distance(a[i].data, b[a2b[i]].data)));
   
   return m;
-  }
+}
 
 
 // HW5 3.1
@@ -180,14 +178,19 @@ vector<Match> match_descriptors(const vector<Descriptor>& a, const vector<Descri
 // returns: point projected using the homography.
 Point project_point(const Matrix& H, const Point& p)
   {
-  // TODO: project point p with homography H.
-  // Remember that homogeneous coordinates are equivalent up to scalar.
-  // Have to divide by.... something...
+  Matrix point(3, 1);
+
+  point(0, 0) = p.x;
+  point(1, 0) = p.y;
+  point(2, 0) = 1;
   
-  NOT_IMPLEMENTED();
-  
-  
-  return Point(0,0);
+  Matrix point_prime(3, 1);
+  point_prime = H * point;
+
+  float xprime = point_prime(0, 0) / point_prime(2, 0);
+  float yprime = point_prime(1, 0) / point_prime(2, 0);
+
+  return Point(xprime, yprime);
   }
 
 // HW5 3.2a
@@ -196,9 +199,9 @@ Point project_point(const Matrix& H, const Point& p)
 // returns: L2 distance between them.
 double point_distance(const Point& p, const Point& q)
   {
-  // TODO: should be a quick one.
-  NOT_IMPLEMENTED();
-  return 0;
+  float x2 = pow(p.x-q.x, 2);
+  float y2 = pow(p.y-q.y, 2);
+  return sqrt(x2 + y2);
   }
 
 // HW5 3.2b
@@ -211,10 +214,9 @@ double point_distance(const Point& p, const Point& q)
 vector<Match> model_inliers(const Matrix& H, const vector<Match>& m, float thresh)
   {
   vector<Match> inliers;
-  // TODO: fill inliers
-  // i.e. distance(H*a.p, b.p) < thresh
-  
-  NOT_IMPLEMENTED();
+  for (int i = 0; i < m.size(); i++)
+    if (point_distance(project_point(H, m[i].a->p), m[i].b->p) < thresh)
+      inliers.push_back(m[i]);
   
   return inliers;
   }
@@ -224,12 +226,12 @@ vector<Match> model_inliers(const Matrix& H, const vector<Match>& m, float thres
 // vector<Match>& m: matches to shuffle in place.
 void randomize_matches(vector<Match>& m)
   {
-  // TODO: implement Fisher-Yates to shuffle the array.
-  // You might want to use the swap function like:
-  // swap(m[0],m[1]) which swaps the first and second element
-  
-  NOT_IMPLEMENTED();
+  for (int i = 0; i < m.size()-1; i++)
+  {
+    int j = (rand() % (m.size() - i)) + i;
+    swap(m[i], m[j]);
   }
+}
 
 // HW5 3.4
 // Computes homography between two images given matching pixels.
@@ -251,9 +253,28 @@ Matrix compute_homography_ba(const vector<Match>& matches)
     
     double nx = matches[i].b->p.x;
     double ny = matches[i].b->p.y;
-    // TODO: fill in the matrices M and b.
     
-    NOT_IMPLEMENTED();
+    int row1 = 2*i;
+    int row2 = row1 + 1;
+    M(row1, 0) = mx;
+    M(row1, 1) = my;
+    M(row1, 2) = 1;
+    M(row1, 3) = 0;
+    M(row1, 4) = 0;
+    M(row1, 5) = 0;
+    M(row1, 6) = -nx*mx;
+    M(row1, 7) = -nx*my;
+    b(row1, 0) = nx;
+
+    M(row2, 0) = 0;
+    M(row2, 1) = 0;
+    M(row2, 2) = 0;
+    M(row2, 3) = mx;
+    M(row2, 4) = my;
+    M(row2, 5) = 1;
+    M(row2, 6) = -ny*mx;
+    M(row2, 7) = -ny*my;
+    b(row2, 0) = ny;
     
     }
   
@@ -262,9 +283,15 @@ Matrix compute_homography_ba(const vector<Match>& matches)
   Matrix a = solve_system(M, b);
   
   Matrix Hba(3, 3);
-  // TODO: fill in the homography H based on the result in a.
-  
-  NOT_IMPLEMENTED();
+  Hba(0, 0) = a(0, 0);
+  Hba(0, 1) = a(1, 0);
+  Hba(0, 2) = a(2, 0);
+  Hba(1, 0) = a(3, 0);
+  Hba(1, 1) = a(4, 0);
+  Hba(1, 2) = a(5, 0);
+  Hba(2, 0) = a(6, 0);
+  Hba(2, 1) = a(7, 0);
+  Hba(2, 2) = 1;
   
   return Hba;
   }
@@ -297,10 +324,26 @@ Matrix RANSAC(vector<Match> m, float thresh, int k, int cutoff)
   //             return it immediately
   // if we get to the end return the best homography
   
-  NOT_IMPLEMENTED();
+  for (int i = 0; i < k; i++)
+  {
+    randomize_matches(m);
+    vector<Match> few_matches;
+    for (int j = 0; j < 4; j++)
+      few_matches.push_back(m[j]);
+    Matrix homography = compute_homography_ba(few_matches);
+
+    vector<Match> inliers = model_inliers(homography, m, thresh);
+    if (inliers.size() > best)
+    {
+      Hba = compute_homography_ba(inliers);
+      best = inliers.size();
+      if (best > cutoff) 
+        return Hba;
+    }
+  }
   
   return Hba;
-  }
+}
 
 
 Image trim_image(const Image& a)
@@ -375,8 +418,8 @@ Image combine_images(const Image& a, const Image& b, const Matrix& Hba, float ab
     for(int j = 0; j < a.h; ++j)
       for(int i = 0; i < a.w; ++i)
         {
-        // TODO: fill in.
-        NOT_IMPLEMENTED();
+          c(i-dx, j-dy, k) = a(i, j, k); //added
+
         }
   
   // TODO: Blend in image b as well.
@@ -391,9 +434,22 @@ Image combine_images(const Image& a, const Image& b, const Matrix& Hba, float ab
   // "is_nonempty_patch" and try to figure out why it might be useful.
   // The member 
   
-  // TODO: Put your code here.
-  
-  NOT_IMPLEMENTED();
+  for (int x = topleft.x; x <= botright.x; x++)
+    for (int y = topleft.y; y <= botright.y; y++)
+    {
+      Point p(x, y);
+      Point projected_p = project_point(Hba, p);
+      if (b.contains(projected_p.x, projected_p.y) && x-dx >= 0 && x-dx < c.w && y-dy >= 0 && y-dy < c.h)
+      {
+        for (int layer = 0; layer < c.c; layer++)
+        {
+          float bilinear = b.pixel_bilinear(projected_p.x, projected_p.y, layer);
+          
+          c(x-dx, y-dy, layer) = bilinear;  
+          
+        }
+      }
+    }
   
   
   // We trim the image so there are as few as possible black pixels.
@@ -435,8 +491,7 @@ Image panorama_image(const Image& a, const Image& b, float sigma, int corner_met
 // const Image& im: image to project.
 // float f: focal length used to take image (in pixels).
 // returns: image projected onto cylinder, then flattened.
-Image cylindrical_project(const Image& im, float f)
-  {
+Image cylindrical_project(const Image& im, float f){
   //TODO: project image onto a cylinder
   double hfov=atan(im.w/(2*f));
   double vfov=im.h/2./f;
@@ -447,7 +502,7 @@ Image cylindrical_project(const Image& im, float f)
   NOT_IMPLEMENTED();
   
   return c;
-  }
+}
 
 // HW5 4.2
 // Project an image onto a cylinder.
