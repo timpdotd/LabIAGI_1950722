@@ -16,13 +16,11 @@ Input:
 Output:
     Image: the smoothed image (im.w, im.h, 1)
 */
-Image smooth_image(const Image& im, float sigma)
-{
-    // TODO: Your code here
-    NOT_IMPLEMENTED();
-    return im;
+Image smooth_image(const Image& im, float sigma) {
+    Image gauss = make_gaussian_filter(sigma);
+    Image ret = convolve_image(im, gauss, false);
+    return ret;
 }
-
 
 /*
 Computes the magnitude and direction of the gradient of an image.
@@ -32,11 +30,10 @@ Output:
     pair<Image,Image>: the magnitude and direction of the gradient of the image
                        with magnitude in [0,1] and direction in [-pi,pi]
 */
-pair<Image,Image> compute_gradient(const Image& im)
-{
-    // TODO: Your code here
-    NOT_IMPLEMENTED();
-    return{im, im};
+pair<Image,Image> compute_gradient(const Image& im) {
+    pair<Image, Image> sobel = sobel_image(im);
+    feature_normalize(sobel.first);
+    return sobel;
 }
 
 
@@ -48,30 +45,53 @@ Input:
 Output:
     Image: the image after non-maximum suppression
 */
-Image non_maximum_suppression(const Image& mag, const Image& dir)
-{
+float min_mag (float a, float b, float c){
+    return min({a,b,c});
+}
+
+Image non_maximum_suppression(const Image& mag, const Image& dir) {
     Image nms(mag.w, mag.h, 1);
     float neighbor1, neighbor2;
 
     // Iterate through the image and perform non-maximum suppression
     for (int y = 0; y < mag.h; y++) {
         for (int x = 0; x < mag.w; x++) {
-            
-            // TODO: Your code here
-            NOT_IMPLEMENTED();
-
             // Get the direction of the gradient at the current pixel
+            float curr_dir_f = (float)(dir(x,y,0)/M_PI)*180;
+            int curr_dir = round(curr_dir_f);
+            if (curr_dir < 0) curr_dir += 180;
+            int near_dir;
 
             // Round the direction to the nearest multiple of PI/4
-
+            int dist = curr_dir % 45;
+            if (dist > 22) near_dir = curr_dir - dist + 45;
+            else near_dir = curr_dir - dist;
+            
             // Get the magnitude of the gradient of the two neighbors along that direction
-            // (Hint: use clamped_pixel to avoid going out of bounds)            
+            // (Hint: use clamped_pixel to avoid going out of bounds)
+            if (near_dir == 0 || near_dir == 180) {
+                neighbor1 = mag.clamped_pixel(x-1,y,0);
+                neighbor2 = mag.clamped_pixel(x+1,y,0);
+            }
+            else if (near_dir == 90) {
+                neighbor1 = mag.clamped_pixel(x,y+1,0);
+                neighbor2 = mag.clamped_pixel(x,y-1,0);
+            }
+            else if (near_dir == 135) {
+                neighbor1 = mag.clamped_pixel(x+1,y-1,0);
+                neighbor2 = mag.clamped_pixel(x-1,y+1,0);
+            }
+            else if (near_dir == 45) {
+                neighbor1 = mag.clamped_pixel(x-1,y-1,0);
+                neighbor2 = mag.clamped_pixel(x+1,y+1,0);
+            }
 
             // If the magnitude of the gradient of the current pixel is greater than that of both neighbors,
             // then it is a local maximum
+            if (mag(x,y,0) >= neighbor1 && mag(x,y,0) >= neighbor2) nms.set_pixel(x,y,0,mag(x,y,0));
+            else nms.set_pixel(x,y,0,0);
         }
     }
-
     return nms;
 }
 
@@ -91,9 +111,17 @@ Image non_maximum_suppression(const Image& mag, const Image& dir)
 Image double_thresholding(const Image& im, float lowThreshold, float highThreshold, float strongVal, float weakVal)
 {
     Image res(im.w, im.h, im.c);
-
-    // TODO: Your code here
-    NOT_IMPLEMENTED();
+    
+    for (int c=0; c<im.c; c++) {
+        for (int y = 0; y < im.h; y++) {
+            for (int x = 0; x < im.w; x++) {
+                float curr_pix = im(x,y,c);
+                if (curr_pix > highThreshold) res.set_pixel(x,y,c,strongVal);
+                else if(curr_pix < lowThreshold) res.set_pixel(x,y,c,0);
+                else res.set_pixel(x,y,c,weakVal);
+            }
+        }
+    }
 
     return res;
 }
@@ -112,14 +140,26 @@ Image edge_tracking(const Image& im, float weak, float strong)
 {
     Image res(im.w, im.h, im.c);
 
-    for (int y=0; y < im.h; ++y) {
-        for (int x=0; x < im.w; ++x) {
-            // TODO: Your code here
-            NOT_IMPLEMENTED();
-
-            // Hint: use clamped_pixel when checking the neighbors to avoid going out of bounds
+    for (int c=0; c<im.c; c++) {
+        for (int y=0; y < im.h; ++y) {
+            for (int x=0; x < im.w; ++x) {
+                if (im(x,y,c) == strong) { res.set_pixel(x,y,c,strong); continue; }
+                if (im(x,y,c) == 0) { res.set_pixel(x,y,c,0); continue; }
+                
+                int set = 0;
+                for (int i=-1; i<2; i++) {
+                    for (int j=-1; j<2; j++) {
+                        
+                        if(im.clamped_pixel(x+i,y+j,c) == strong) {
+                            res.set_pixel(x,y,c,strong); 
+                            set = 1; 
+                            break;
+                        }   
+                    }
+                }
+                if (set == 0) res.set_pixel(x,y,c,0);
+            }
         }
     }
     return res;
-
 }
